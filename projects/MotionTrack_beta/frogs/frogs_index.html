@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>MotionTrack - Frogs</title>
+
+		<link href="../styles/layout.css" rel="stylesheet" type="text/css" media="all">
+		    <!-- Bootstrap core CSS -->
+		<link href="../../../bootstrap_dist/css/bootstrap.min.css" rel="stylesheet">
+	    
+		<!-- Custom styles for this template -->
+		<link href="../../../bootstrap_dist/css/jumbotron-narrow.css" rel="stylesheet">	
+
+		<!--[if lt IE 9]>
+		<script type="text/javascript">alert("Your browser does not support the canvas tag.");</script>
+		<![endif]-->
+		<script src="../processing.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		// convenience function to get the id attribute of generated sketch html element
+			function getProcessingSketchId () { return 'frogs_svg'; }
+		</script>
+
+	</head>
+	<body>
+		<div class="wrapper row1">
+		<header id="header">
+			<div id="logo">
+				<h1><a href="../index.html">MotionTrack</a></h1>
+			</div>
+			<div class="fl_right">
+			    <ul>
+			    <li><a href="../about.html">About</a></li>
+			    <li><a href="http://michaelskaug.com/index.html">Home</a></li>
+			    </ul>
+			</div>
+		</header>
+		</div>
+		
+		<div id="content" class="container">
+			<div class="center">
+				<canvas id="frogs_svg" data-processing-sources="frogs_svg.pde" 
+						width="700" height="500" onmouseover="document.body.style.overflow='hidden';" onmouseout="document.body.style.overflow='auto';">
+					<p>Your browser does not support the canvas tag.</p>
+					<!-- Note: you can put any alternative content here. -->
+				</canvas>
+				<noscript>
+					<p>JavaScript is required to view the contents of this page.</p>
+				</noscript>
+				<div id="subdescription">
+				<p>Frogs actually move around - a lot.  These are the motion paths of frogs in the waterways east of Boulder CO.
+				The data were collected by <a href="http://mbjoseph.github.io/about/">Maxwell B. Joseph</a> as part of a study on the ecology of amphibian disease.</p>
+				</div>
+			</div>
+			
+			
+		</div>
+		
+
+
+	</body>
+</html>

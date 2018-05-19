@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>MotionTrack - Elephants</title>
+
+		<link href="../styles/layout.css" rel="stylesheet" type="text/css" media="all">
+		    <!-- Bootstrap core CSS -->
+		<link href="../../../bootstrap_dist/css/bootstrap.min.css" rel="stylesheet">
+	    
+		<!-- Custom styles for this template -->
+		<link href="../../../bootstrap_dist/css/jumbotron-narrow.css" rel="stylesheet">
+
+		<!--[if lt IE 9]>
+		<script type="text/javascript">alert("Your browser does not support the canvas tag.");</script>
+		<![endif]-->
+		<script src="../processing.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		// convenience function to get the id attribute of generated sketch html element
+			function getProcessingSketchId () { return 'elephants_svg'; }
+		</script>
+
+	</head>
+	<body>
+		<div class="wrapper row1">
+		<header id="header">
+			<div id="logo">
+				<h1><a href="../index.html">MotionTrack</a></h1>
+			</div>
+			<div class="fl_right">
+			    <ul>
+			    <li><a href="../about.html">About</a></li>
+			    </ul>
+			</div>
+		</header>
+		</div>
+		
+		<div id="content" class="container">
+			<div class="center">
+				<canvas id="elephants_svg" data-processing-sources="elephants_svg.pde" 
+						width="700" height="500" onmouseover="document.body.style.overflow='hidden';" onmouseout="document.body.style.overflow='auto';">
+					<p>Your browser does not support the canvas tag.</p>
+					<!-- Note: you can put any alternative content here. -->
+				</canvas>
+				<noscript>
+					<p>JavaScript is required to view the contents of this page.</p>
+				</noscript>
+				<div id="subdescription">
+				<p>These data comes from a <a href="http://dx.doi.org/10.1111/2041-210X.12218">study</a>
+				on the movement of African elephants.  Clearly there are favored routes and locations. The data
+				is <a href="https://www.datarepository.movebank.org/handle/10255/move.372">housed</a> at the wonderful
+				<a href="https://www.movebank.org">Movebank</a> resource.</p>
+				</div>
+			</div>
+			
+			
+			
+		</div>
+		
+	</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="Michael Skaug">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>The Seasons of US Climbing</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../../bootstrap_dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../../bootstrap_dist/css/jumbotron-narrow.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-36183871-2', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+    <script type="text/javascript" src="hexbin.min.js"></script>
+    <script type="text/javascript" src="d3.slider.js"></script>
+    <link href="d3.slider.css" rel="stylesheet">
+
+    <style type="text/css">
+	#slider text {
+		font-family: sans-serif;
+		font-size: 14px;
+	}
+	#slider {
+		position: absolute;
+		width:600px;
+		top: 10px;
+		left: 120px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	#key {
+		position:absolute;
+	}
+	#max, #min, #bestOption{
+		position: absolute;
+		width:150px;
+		margin: 0;
+		font-family: sans-serif;
+		line-height: 20px;
+		text-align: right;
+	}
+	.title {
+		text-align: center;
+	}
+	.title p{
+		width: 40%;
+		color: gray;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	#byline{
+		color: rgb(150,150,150);
+		font: 11px serif;
+	}
+	.hexagons{
+		opacity: 0.7;
+	}	
+  </style>
+  </head>
+
+  <body>
+
+    <div class="container">
+      <a href="../../"><span class="h5 text-muted">MichaelSkaug </span></a> > <a href="../projects.html"><span class="h5 text-muted">Projects </span></a> 
+
+      <h1>The Seasons of US Climbing</h1>
+      
+      <div class="container marketing" style="width:840px;height:auto;position:relative" >
+      <div id="slider"></div>
+      <div id="key">
+              <div id="max">Prime Time</div>
+              <div id="min">Empty</div>
+      </div>
+      <script type="text/javascript">
+
+	var w = 840;
+	var h = 500;
+
+	//for translating between slider and data
+	var months = {
+		"Jan":"season_1",
+		"Feb":"season_2",
+		"Mar":"season_3",
+		"Apr":"season_4",
+		"May":"season_5",
+		"Jun":"season_6",
+		"Jul":"season_7",
+		"Aug":"season_8",
+		"Sep":"season_9",
+		"Oct":"season_10",
+		"Nov":"season_11",
+		"Dec":"season_12",
+	};
+
+	var selection = months.Oct; //initialized value
+
+	var projection = d3.geo.albersUsa()
+				.translate([w/2-80, h/2+20])
+				.scale([850]);
+				
+	var hexbin = d3.hexbin()
+			.size([w, h])
+			.radius(12);			
+	
+	var path = d3.geo.path()
+			.projection(projection);
+
+	var svg = d3.select(".container")
+			.append("svg")
+			.attr("width", w)
+			.attr("height", h)
+			.append("g");
+			
+	svg.append("rect")
+		.attr("x",0)
+		.attr("y",0)
+		.attr("width",w)
+		.attr("height",h)
+		.style("fill","#ffffff");
+					
+	var color = d3.scale.linear()
+			.domain([0, 1000])
+			.range(["#fffffc", "#e31a1c"]);
+	
+	d3.json("us-land.json", function(error, us) {
+		
+		if (error) throw error;
+		
+		var defs = svg.append("defs");
+		
+		defs.append("path")
+		    .datum(topojson.feature(us, us.objects.land))
+		    .attr("id", "land")
+		    .attr("d", path)
+		    .style("fill", "none");
+		
+		//some ugly code here to get shaded relief background images properly placed, scaled and clipped.   
+		svg.append("clipPath")
+		    .attr("id", "clip1")
+		    .attr("transform","translate(26,-48)") 
+		  .append("use")
+		    .attr("xlink:href", "#land");
+		    
+		svg.append("image")
+		    .attr("width", 900*0.8)
+		    .attr("height", 600*0.8)
+		    .attr("transform","translate(-26,48)")
+		    .attr("clip-path", "url(#clip1)")
+		    .attr("xlink:href", "lower48.png");
+		    
+		svg.append("clipPath")
+			.attr("id", "clip2")
+			.attr("transform","translate(7,-368)")
+		      .append("use")
+			.attr("xlink:href", "#land");
+		    
+		svg.append("image")
+		    .attr("width", 300*0.62)
+		    .attr("height", 202*0.62)
+		    .attr("transform","translate(-7,368)")
+		    .attr("clip-path", "url(#clip2)")
+		    .attr("xlink:href", "alaska.png");
+		    
+		svg.append("use")
+		    .attr("xlink:href", "#land");
+		    
+		d3.json("us-states.json", function(error, sts) {
+			if (error) throw error;
+	   
+			svg.append("path")
+			   .datum(topojson.feature(sts, sts.objects.states))
+			   .attr("d", path)
+			   .style("fill", "none")
+			   .style("stroke", "white")
+			   .style("stroke-width", "1");   
+			
+			d3.json("MP_area_latlong_pop_season_data.json", function(data) {
+				if (error) throw error;
+				
+				//Shortening, removing duplicates and special characters from title names
+				var names = [];
+				var result = [];
+				var indx=-1;
+				for(var i=0; i< data.length; i++){
+				    str = data[i].title;
+				    str = str.replace(/[^\w\s]/gi, '');
+				    if(str.length>18){
+					str = str.slice(0,18).concat('...');
+				    }
+				    data[i].title = str;
+				    indx = names.indexOf(data[i].title);
+				    if(indx==-1){
+					names.push(data[i].title);
+					result.push(data[i]);  
+				    }
+				}
+				data = result;
+				
+				//sort by season and popularity
+				data.sort(function(a,b){
+					var aSeason = a[selection];
+					var bSeason = b[selection];
+					var aPop = a.popularity;
+					var bPop = b.popularity;
+					if(aSeason == bSeason)
+					{
+					    return (bPop < aPop) ? -1 : (bPop > aPop) ? 1 : 0;
+					}
+					else
+					{
+					    return (bSeason < aSeason) ? -1 : 1;
+					}
+				});
+				
+				//convert lat,lon to screen coordinates	
+				data.forEach(function(d) {
+					var p = projection([d.lon, d.lat]);
+					d[0] = p[0], d[1] = p[1];
+				      });
+				
+				svg.append("g")
+				      .attr("class", "hexagons")
+				    .selectAll("path")
+				      .data(hexbin(data)) 
+				    .enter().append("path")
+				      .attr("d", function(d) { return hexbin.hexagon(12); })
+				      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+				      .style("fill", function(d) { return color(d3.mean(d, function(d) { return +d[selection]; })); })
+				     
+				
+				var top5 = svg.selectAll(".top5")
+					.data(data.slice(0,20))
+					.enter()
+					.append("g")
+					.attr("class", "top5");
+    
+				top5.append("path") //create push-pin map markers on top 5 areas
+					.attr("d","M26.334-47.833c0,3.547-0.538,6.462-1.612,8.74L6.948-1.3C6.428-0.226,5.654,0.622,4.629,1.239S2.505,2.167,1.333,2.167 s-2.271-0.311-3.296-0.928S-3.745-0.226-4.233-1.3l-17.822-37.793c-1.074-2.278-1.611-5.193-1.611-8.74 c0-6.902,2.441-12.793,7.324-17.676s10.774-7.324,17.676-7.324s12.793,2.441,17.676,7.324S26.334-54.735,26.334-47.833z") 
+					.style("fill","white")
+					.style("stroke","black")
+					.style("stroke-width",2)
+					.attr("transform", function(d) { return "translate("+d[0]+" "+d[1]+")scale("+0+" "+0+")"});
+				
+				svg.append("text")
+					.attr("x",670)
+					.attr("y", h-400)
+					.attr("dy", "-0.4em")
+					.text("Top 20")
+					.style("font-weight","bold");
+					
+				top5.append("text")
+					.attr("y", function(d,i) { return h-380+20*i; })
+					.attr("dy", "-0.4em")
+					.attr("x",670)
+					.text(function(d,i){return i+1+". "+d.title;})
+					.on("mouseover", function(){
+						document.body.style.cursor = 'pointer';
+						d3.select(this.previousSibling)
+						  .transition()
+						  .duration(250)
+						  .ease("linear")
+						  .attr("transform", function(d) { return "translate("+d[0]+" "+d[1]+")scale("+0.5+" "+0.5+")"});
+						d3.select(this)
+						  .style("font-weight","bold")
+					})
+					.on("mouseout", function(){
+						document.body.style.cursor = 'default';
+						d3.select(this.previousSibling)
+						  .transition()
+						  .duration(150)
+						  .ease("linear")
+						  .attr("transform", function(d) { return "translate("+d[0]+" "+d[1]+")scale("+0+" "+0+")"});
+						d3.select(this)
+						  .style("font-weight","normal")
+					});
+					
+				//Create the month slider
+				d3.select('#slider').call(
+					
+					d3.slider().scale(d3.scale.ordinal().domain(["Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sep","Oct","Nov","Dec"])
+						.rangePoints([0, 1], 0.5))
+						.axis(d3.svg.axis())
+						.snap(true)
+						.value("Oct")
+						.on("slide", function(evt, value) {
+							selection = get_sel(value);
+							
+							data.sort(function(a,b){
+								var aSeason = a[selection];
+								var bSeason = b[selection];
+								var aPop = a.popularity;
+								var bPop = b.popularity;
+								if(aSeason == bSeason)
+								{
+								    return (bPop < aPop) ? -1 : (bPop > aPop) ? 1 : 0;
+								}
+								else
+								{
+								    return (bSeason < aSeason) ? -1 : 1;
+								}
+							});
+							var top5 = svg.selectAll(".top5")
+								.data(data.slice(0,20));
+							top5.select("path")
+								.attr("transform", function(d) { return "translate("+d[0]+" "+d[1]+")scale("+0+" "+-0+")"});
+							top5.select("text")
+								.transition()
+								.duration(1000)
+								.ease("linear")
+								.text(function(d,i){return i+1+". "+d.title;});
+							
+							svg.selectAll(".hexagons path")
+								.transition()
+								.duration(1000)
+								.ease("linear")
+								.style("fill", function(d) { return color(d3.median(d, function(d) { return +d[selection]; })); });
+						})
+			
+				);		
+					
+			}); //end d3.json
+		});
+	
+	});
+	
+	//Create color scale key
+	var scale_width = 15,
+		scale_height = 75,
+		divisions = 75;
+	    
+	var newData = [];
+	var sectionHeight = Math.floor(scale_height / divisions);
+	
+	for (var i=0; i < scale_height; i+= sectionHeight ) {
+	    newData.push(i);
+	}
+	
+	var colorScaleKey = d3.scale.linear()
+		.domain([0, newData.length-1])
+		.range(["#fffffc", "#e31a1c"]);
+	
+	var key = d3.select("#key")
+		.style("left",w-200+"px")
+		.style("top",h-140+"px")
+	    .append("svg")
+		.attr("width", scale_width)
+		.attr("height", scale_height);
+	
+	d3.select("#max").style("right",scale_width+3+"px");
+	d3.select("#min").style("bottom",0+"px").style("right",scale_width+3+"px");
+		
+	key.selectAll('rect')
+	    .data(newData)
+	    .enter()
+	    .append('rect')
+		.attr("x", 0)
+		.attr("y", function(d) { return scale_height - d; })
+		.attr("height", sectionHeight)
+		.attr("width", scale_width)
+		.attr('fill', function(d, i) { return colorScaleKey(i)});
+
+	function get_sel(val){
+		for(var name in months) {
+		    if(name==val){
+			var value = months[name];
+			return value;
+		    }		    
+		}
+	};
+	
+	
+      </script>    
+      </div>
+      
+      <div class="row marketing"></div>
+      <p>I addition to the variation in <a href="../ClimbsMapped">climbing types across the
+      US</a>, climbing seasons vary depending on climate,
+      elevation, etc. For many climbers planning a trip, figuring out which area
+      will have the best conditions is often the most challenging task. To help
+      with this, I partnered with <a
+      href="http://www.mountainproject.com">MountainProject.com</a> to produce
+      this <strong>interactive</strong> map showing the seasonability of
+      different regions.  Also listed are the top 20 climbing areas for a given month based on season.</p> 
+      
+      <p>To learn more about the process: <a
+      href="../../D3_hexbins">D3 Hexbins over a Shaded Relief AlbersUS Map</a>.</p>
+      
+      <p>To see the visualization on MountainProject, visit: <a
+      href="http://www.mountainproject.com/scripts/Factoids">www.mountainproject.com/scripts/Factoids</a></p>
+
+    
+      <footer class="footer">
+        <p>&copy; Michael Skaug 2015</p>
+      </footer>
+      </div>
+    </div> <!-- /container -->
+    
+    <script src="../../bootstrap_dist/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+@charset "utf-8";
+
+@import url("styles.css");
+
+.row1, .row1 a{color:#888888; background-color:#FFFFFF;}
+.row2{border-bottom:0px solid; height:100px;}
+.row2, .row2 a{color:#888888; background-color:#FFFFFF;}
+.row2{border-color:#1F1F1F;}
+
+/* Header
+---------------------------------------------------------------------------------------------------------------*/
+#header{padding:40px 0 5px; border-bottom:1px solid; font-size:16px;}
+
+
+#header  ul{margin:8px 0 0 0;}
+#header  li{display:inline-block; margin:0 15px 0 0;}
+
+#header .fl_right{display:inline-block; margin:10px 0 0 0;}
+#header .fl_right ul{margin:8px 0 0 0;}
+#header .fl_right li{display:inline-block; margin:0 15px 0 0;}
+#header .fl_right span{margin:0 5px 0 0;}
+#header .fl_right li:last-child{margin:0;}
+
+#logo {display:inline-block}
+#logo h1{margin:0; padding:0; font-size:32px;}
+
+#intro {margin:0px 0 0 0; color:#505050; text-align: center;}
+#intro p{width:80%; text-align:left; line-height:150%; margin: auto;}
+#intro p::first-letter{font-size:200%;}
+
+#description {width:248px; margin:0px 0 0 0; color:#505050; display:inline-block; padding: 70px 0 0 0; font-size: 14px}
+#description p{width:100%; text-align:justify; line-height:150%;}
+
+#subdescription {margin:0px 0 0 0; color:#505050; display:inline-block; padding: 20px 0 0 0; font-size: 14px} 
+#subdescription p{width:50%; text-align:left; line-height:150%;}
+#subdescription a{color:#b24e4e;}
+
+#about {margin:0px 0 0 0; color:#505050; text-align: center;}
+#about p{width:80%; text-align:left; line-height:150%; margin: auto; padding: 20px 0 0 0;}
+#about ul{width:80%; text-align:left; line-height:150%; margin: auto; padding: 20px 0 0 0;}
+
+
+#motiontrackindex {margin: 0 0 0 30px; padding: 50px 0 0 0; }

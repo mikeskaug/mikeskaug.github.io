@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="Michael Skaug">
+  <link rel="icon" href="../../favicon.ico">
+
+  <title>Airbnb User Trajectories</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../../bootstrap_dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="../../bootstrap_dist/css/jumbotron-narrow.css" rel="stylesheet">
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+    ga('create', 'UA-36183871-2', 'auto');
+    ga('send', 'pageview');
+  
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+
+  <style>
+  body {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+  
+  .container.vis {
+    position: relative;
+    width: 700px;
+    display: table;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  
+  .container.vis p{
+    width: 60%;
+    color: gray;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  #intro{
+    padding-bottom: 20px;
+    text-align: center;
+  }
+  
+  .selector p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+    
+  }
+  .btn-toolbar{
+    padding: 10px;      
+  }
+  
+  svg text{
+    fill: #696969;
+    font-family: "Roboto", sans-serif;
+    font: 10px;
+  }
+  
+  rect {
+    fill: #fff;
+  }
+  
+  .y.axis path,
+  .y.axis line {
+    fill: none;
+    stroke: #d3d3d3;
+  }
+  
+  .x.axis path,
+  .x.axis line {
+    fill: none;
+    stroke: none;
+  }
+  
+  .user .line{
+    stroke-width: 2;
+    stroke: black;
+    stroke-opacity: 0.1;
+    fill: none;
+  }
+  
+  .user:hover * {
+    stroke-opacity: 0.8;
+    opacity: 0.8;
+  }
+  
+  circle {
+    stroke: none;
+    fill: black;
+    opacity: 0.15;
+  }
+  
+  .legend circle {
+    stroke: gray;
+    fill: white;
+    opacity: 1;
+  }
+  
+  #zoom-buttons{
+    position: absolute;
+    color: gray;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  #desktop_button:focus,
+  #desktop_button:hover,
+  #desktop_button.active{
+    background-color: #ff8d90;
+    border-color: #ff8d90;
+  }
+  
+  #mobile_button:focus,
+  #mobile_button:hover,
+  #mobile_button.active{
+    background-color: #00afc2;
+    border-color: #00afc2;
+  }
+  
+  #tablet_button:focus,
+  #tablet_button:hover,
+  #tablet_button.active{
+    background-color: #ffc53b;
+    border-color: #ffc53b;
+  }
+  </style>
+  </head>
+
+  <body>
+
+    <div class="container">
+          <a href="../../"><span class="h5 text-muted">MichaelSkaug </span></a> > <a href="../projects.html"><span class="h5 text-muted">Projects </span></a>
+    </div>
+
+    <div class="container vis" id="intro">
+      <h1>Airbnb User Trajectories</h1>
+      <p>Follow Airbnb users from a US city over the course of a year as they interact with the platform for different lengths of time and from different devices.</p>
+      <svg width="200px" height="100px" >
+        <circle cx="50" cy="50" r="18"></circle>
+        <text x="50" y="50" dx="22" dy="5">Session</text>
+        <line x1="30" y1="90" x2="70" y2="90" style="stroke:black;stroke-width:2.5;stroke-opacity:0.2"></line>
+        <text x="75" y="90" dx="2" dy="5">User</text>
+      </svg>
+    </div>
+    <div class="container vis" id="vis">
+      <div class="btn-group-vertical" id="zoom-buttons" data-toggle="buttons" style="left:80px;">
+          <label class="btn btn-default zoom-btn" id="plus-btn">
+            <input type="radio" name="options"  autocomplete="off"> +
+          </label>
+          <label class="btn btn-default zoom-btn" id="minus-btn">
+            <input type="radio" name="options"  autocomplete="off"> -
+          </label>
+      </div>
+    </div>
+    <div class="container vis">
+      <div class="btn-group selector pull-left" id="button_selectors" data-toggle="buttons">
+              <label class="btn btn-default btn-action" style="">
+                <input type="radio" name="options" id="all_button" autocomplete="off"> ALL
+              </label>
+      </div>
+      <div class="btn-group selector pull-left" id="button_selectors" data-toggle="buttons">        
+              <label class="btn btn-default btn-action">
+                <input type="radio" name="options" id="searched_button" autocomplete="off"> Searched
+              </label>
+              <label class="btn btn-default btn-action">
+                <input type="radio" name="options" id="messaged_button" autocomplete="off"> Messaged
+              </label>
+              <label class="btn btn-default btn-action active">
+                <input type="radio" name="options" id="booked_button" autocomplete="off"> Booked
+              </label>
+      </div>
+      <div class="btn-group pull-right" id="btn-select-device">        
+              <button type="button" class="btn btn-default btn-device active" id="desktop_button"  autocomplete="off"> Desktop </button>
+              <button type="button" class="btn btn-default btn-device" id="mobile_button"  autocomplete="off"> Mobile </button>
+              <button type="button" class="btn btn-default btn-device" id="tablet_button"  autocomplete="off"> Tablet </button>
+      </div>
+    </div>
+    
+    <script>
+    
+    var margin = {top: 20, right: 20, bottom: 30, left: 50},
+        width = 700 - margin.left - margin.right,
+        height = 350 - margin.top - margin.bottom;
+        
+    var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+    var parseTime = d3.time.format("%_H:%M:%S.%0L").parse;
+    var hourOfDay = d3.time.format("%H");
+    
+    var x = d3.time.scale()
+        .range([0, width]);
+    
+    var y1 = d3.scale.linear()
+        .range([height, 0])
+        .domain([1, 180]);
+        
+    var y2 = d3.scale.linear()
+        .range([0, height-50])
+        .domain([0, 24]);
+    
+    
+    var delTime = d3.time.scale()
+        .range([0,1]);
+    
+    var radius = d3.scale.sqrt()
+        .domain([0, 1])
+        .range([0, 50]);
+     
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .tickSize(0)
+        .tickFormat(d3.time.format("%b"));
+    
+    var yAxis1 = d3.svg.axis()
+        .scale(y1)
+        .orient("left")
+        .ticks(5, ",s")
+        .tickSize(0);
+        
+    var yAxis2 = d3.svg.axis()
+        .scale(y2)
+        .orient("left")
+        .tickSize(0);
+        
+    var line = d3.svg.line()
+        .interpolate("basis")
+        .x(function(d) { return x(d.ts_min); })
+        .y(function(d) { return y1(d.dim_session_number); });
+    
+    var zoom = d3.behavior.zoom()
+        .y(y1)
+        .center([ width/2, height])
+        .scaleExtent([0.2, 50])
+        .on("zoom", zoomed);
+    
+    var svg = d3.select(".container#vis").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", 2*height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .call(zoom)
+        .on("mousedown.zoom", null)
+        .on("touchstart.zoom", null)
+        .on("touchmove.zoom", null)
+        .on("touchend.zoom", null);
+    
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height);
+    
+    d3.csv('./Airbnb_usrdata.csv', function(error,data) {
+      if (error) throw error;
+      
+      data.forEach(function(d) {
+        d.ts_min = parseDate(d.ts_min);
+        d.deltat = parseDate(d.ts_max) - d.ts_min;
+      });
+    
+      x.domain(d3.extent(data, function(d) { return d.ts_min; }));
+      delTime.domain( d3.extent(data, function(d) { return d.deltat; }) );
+      
+      var userData = d3.nest() //group data by user id
+          .key(function(d) { return d.id_visitor; })
+          .sortValues(function(a,b) { return a.dim_session_number - b.dim_session_number; } )
+          .entries(data);
+      
+      svg.append("clipPath")
+          .attr("id", "clip")
+        .append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", width)
+          .attr("height", height);
+          
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (height+10) + ")")
+          .call(xAxis);
+        
+    
+      svg.append("g")
+          .attr("class", "y axis 1")
+          .call(yAxis1)
+        .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", -35)
+          .attr("x",-90)
+          .style("text-anchor", "end")
+          .text("User's Session Number");
+          
+      svg.append("g")
+          .attr("class", "y axis 2")
+          .attr("transform", "translate(0," + (height+50) + ")")
+          .call(yAxis2)
+        .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", -35)
+          .attr("x",-90)
+          .style("text-anchor", "end")
+          .text("Hour of the Day");    
+          
+      var user = svg.selectAll(".user")
+        .data(userData)
+        .enter()
+        .append("g")
+        .attr("class", "user");
+        
+      user.append("path")
+          .attr("class", "line")
+          .attr("clip-path", "url(#clip)")
+          .attr("d", function(d) { return line(d.values); })
+            
+      user.append("g")
+          .attr("class", "dots")
+          .attr("clip-path", "url(#clip)")
+          .selectAll("circle")
+          .data(function(d) { return d.values; })
+          .enter()
+          .append("circle")
+          .attr("cx", function(d,i) {  return x(d.ts_min); })
+          .attr("cy", function(d,i) { return y1(d.dim_session_number); })
+          .filter(function(d) { return d.sent_booking_request == 1 })
+          .attr("r", 5);
+          
+          
+      user.append("g")
+          .attr("class", "bubbles")
+          .selectAll("circle")
+          .data(function(d) { return d.values; })
+          .enter()
+          .append("circle")
+          .attr("cx", function(d,i) {  return x(d.ts_min); })
+          .attr("cy", function(d,i) { return y2(hourOfDay(d.ts_min)); })
+          .attr("transform", "translate(0," + (height+50) + ")")
+          .filter(function(d) { return d.sent_booking_request == 1 })
+          .attr("r", function(d) {  return radius(delTime(d.deltat)) });
+          
+      //Create legend
+      var legend = svg.append("g")
+          .attr("class", "legend")
+          .attr("transform", "translate(" + (width - 30) + "," + (2* height - 20) + ")")
+        .selectAll("g")
+          .data([ 6000000, 600000 ])
+        .enter().append("g");
+                  
+      legend.append("circle")
+          .attr("cy", function(d) { return -radius(delTime(d)); })
+          .attr("r", function(d) { return radius(delTime(d)); });
+                  
+      legend.append("text")
+          .attr("y", function(d) { return -2*radius(delTime(d)); })
+          .attr("dy", "-0.4em")
+          .style("text-anchor", "middle")
+          .text(function(d) { return d/60000; });
+          
+      svg.select(".legend")
+          .append("text")
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Duration");
+      svg.select(".legend")    
+          .append("text")
+          .attr("dy", "2.2em")
+          .style("text-anchor", "middle")
+          .text("(minutes)");
+          
+      svg.selectAll(".dots circle")
+           .filter(function(d) { return d.desktop == 1 })
+           .style("fill","rgb(255,90,95)");
+    
+      svg.selectAll(".bubbles circle")
+            .filter(function(d) { return d.desktop == 1 })
+            .style("fill","rgb(255,90,95)");
+      
+    
+    }); //end d3.csv
+    
+    
+    d3.select("#all_button")
+      .on("click", function() {
+              
+        toggle_buttons();
+        d3.select(this.parentNode).classed("active",true);
+        //Update all circles
+        svg.selectAll(".dots circle")
+                .transition().duration(1000).ease('linear')
+                .attr("r", 0)
+                .transition()
+                .duration(2000)
+                .attr("r", 5)
+                
+                
+        svg.selectAll(".bubbles circle")
+              .transition().duration(1000).ease('linear')
+              .attr("r", 0)
+              .transition()
+              .duration(2000)
+              .attr("r", function(d) { return radius(delTime(d.deltat)) })
+    
+    });
+      
+    d3.select("#searched_button")
+      .on("click", function() {
+              
+        toggle_buttons();
+        d3.select(this.parentNode).classed("active",true);
+        //Update all circles
+        svg.selectAll(".dots circle")
+                .transition().duration(1000).ease('linear')
+                .attr("r", 0)
+                .transition()
+                .duration(2000)
+                .ease("linear")
+                .filter(function(d) { return d.did_search == 1 })
+                .attr("r", 5)
+                
+        svg.selectAll(".bubbles circle")
+              .transition().duration(1000).ease('linear')
+              .attr("r", 0)
+              .transition()
+              .duration(2000)
+              .ease("linear")
+              .filter(function(d) { return d.did_search == 1 })
+              .attr("r", function(d) { return radius(delTime(d.deltat)) })
+                          
+    });
+      
+    d3.select("#messaged_button")
+      .on("click", function() {
+              
+        toggle_buttons();
+        d3.select(this.parentNode).classed("active",true);
+        //Update all circles
+        svg.selectAll(".dots circle")
+                .transition().duration(1000).ease('linear')
+                .attr("r", 0)
+                .transition()
+                .duration(2000)
+                .ease("linear")
+                .filter(function(d) { return d.sent_message == 1 })
+                .attr("r", 5)
+                
+                
+        svg.selectAll(".bubbles circle")
+              .transition().duration(1000).ease('linear')
+              .attr("r", 0)
+              .transition()
+              .duration(2000)
+              .ease("linear")
+              .filter(function(d) { return d.sent_message == 1 })
+              .attr("r", function(d) { return radius(delTime(d.deltat)) })
+                    
+    });
+      
+    d3.select("#booked_button")
+      .on("click", function() {
+              
+        toggle_buttons();
+        d3.select(this.parentNode).classed("active",true);
+        //Update all circles
+        svg.selectAll(".dots circle")
+            .transition().duration(1000).ease('linear')
+            .attr("r", 0)
+            .transition()
+            .duration(2000)
+            .ease("linear")
+            .filter(function(d) { return d.sent_booking_request == 1 })
+            .attr("r", 5)
+                
+                
+        svg.selectAll(".bubbles circle")
+            .transition().duration(1000).ease('linear')
+            .attr("r", 0)
+            .transition()
+            .duration(2000)
+            .ease("linear")
+            .filter(function(d) { return d.sent_booking_request == 1 })
+            .attr("r", function(d) { return radius(delTime(d.deltat)) })
+                    
+    });
+    
+    d3.select("#desktop_button")
+      .on("click", function() {
+              
+        if ( d3.select(this).classed("active") ) {
+          svg.selectAll(".dots circle")
+                  .filter(function(d) { return d.desktop == 1 })
+                  .style("fill","black");
+      
+          svg.selectAll(".bubbles circle")
+                .filter(function(d) { return d.desktop == 1 })
+                .style("fill","black");
+          d3.select(this).classed("active",false);
+        } else {
+           svg.selectAll(".dots circle")
+                .filter(function(d) { return d.desktop == 1 })
+                .style("fill","rgb(255,90,95)");
+      
+          svg.selectAll(".bubbles circle")
+                .filter(function(d) { return d.desktop == 1 })
+                .style("fill","rgb(255,90,95)");
+          d3.select(this).classed("active",true);      
+        }
+                     
+    });
+      
+    d3.select("#mobile_button")
+      .on("click", function() {
+              
+        if ( d3.select(this).classed("active") ) {
+          svg.selectAll(".dots circle")
+                  .filter(function(d) { return d.phone == 1 })
+                  .style("fill","black");
+      
+          svg.selectAll(".bubbles circle")
+                .filter(function(d) { return d.phone == 1 })
+                .style("fill","black");
+          d3.select(this).classed("active",false);
+        } else {
+           svg.selectAll(".dots circle")
+                .filter(function(d) { return d.phone == 1 })
+                .style("fill","rgb(0,122,135)");
+      
+          svg.selectAll(".bubbles circle")
+                .filter(function(d) { return d.phone == 1 })
+                .style("fill","rgb(0,122,135)");
+          d3.select(this).classed("active",true);      
+        }
+                     
+    });
+      
+    d3.select("#tablet_button")
+      .on("click", function() {
+              
+        if ( d3.select(this).classed("active") ) {
+          svg.selectAll(".dots circle")
+                  .filter(function(d) { return d.other == 1 })
+                  .style("fill","black");
+      
+          svg.selectAll(".bubbles circle")
+                .filter(function(d) { return d.other == 1 })
+                .style("fill","black");
+          d3.select(this).classed("active",false);
+        } else {
+           svg.selectAll(".dots circle")
+                .filter(function(d) { return d.other == 1 })
+                .style("fill","rgb(255,180,0)");
+      
+          svg.selectAll(".bubbles circle")
+                .filter(function(d) { return d.other == 1 })
+                .style("fill","rgb(255,180,0)");
+          d3.select(this).classed("active",true);      
+        }
+                     
+    });  
+      
+    function toggle_buttons(){
+      d3.selectAll(".btn-action")
+        .classed("active",false); 
+    };
+      
+    function zoomed() {
+      svg.select(".y.axis").call(yAxis1);
+      svg.selectAll(".user .line").attr("d", function(d) { return line(d.values); });
+    
+      svg.selectAll(".dots circle")
+          .attr("cx", function(d,i) {  return x(d.ts_min); })
+          .attr("cy", function(d,i) { return y1(d.dim_session_number); });
+    }
+    
+    function zoomClick() {
+        var direction = 1,
+            factor = 0.075,
+            target_zoom = 1,
+            extent = zoom.scaleExtent();
+    
+        direction = (this.id === 'plus-btn') ? 1 : -1;
+        target_zoom = zoom.scale() * (1 + factor * direction);
+    
+        if (target_zoom < extent[0] || target_zoom > extent[1]) { return false; }
+        
+        var scale = zoom.scale();
+        var t = zoom.translate();
+        var c = [width / 2, height];
+        zoom
+          .scale(target_zoom)
+          .translate(
+            [c[0] + (t[0] - c[0]) / scale * target_zoom, 
+             c[1] + (t[1] - c[1]) / scale * target_zoom])
+          .event(svg);
+            
+    }
+    
+    d3.selectAll('.zoom-btn').on('click', zoomClick);
+    
+    </script>
+    <div class="container" style="margin-top: 50px">
+      <p>The purpose of this visualization is to identify patterns in the behavior of users accessing the Airbnb platform. <a href="https://www.airbnb.com">Airbnb</a> open-sourced a one year chunk of user data from a US city for a <a href="http://databits.io/challenges/airbnb-user-pathways-challenge">visualization challange</a> at <a href="http://databits.io">databits.io</a>.  It was a very detailed dataset, so the challenge was to identify and display only a few key patterns - I think the temptation is usually to show too much.</p>
+      
+      <p>One thing that immediately stood out was the lull in activity between the hours of 14 and 18.  You would expect a drop in activity overnight, not in the middle of the afternoon, so it may be that the time stamps in the dataset were shifted.  Also interesting that the top 5 users, who accessed the platform >100 times, never booked. </p>
+      
+      <p>A few other observations (that would need deeper analysis for confirmation):
+      <ul>
+        <li>Users access Airbnb episodically, probably correlating with more frequent visits just before travelling.</li>
+        <li>Most users are on multiple devices with no apparent correlation with the time of day.</li>
+        <li>Access to the platform tapers over time - NumSessions ~ t^1/2 ?</li>
+      </ul></p>
+      
+      <p>Heavy use of <a href="http://www.python.org">Python</a> and <a href="http://pandas.pydata.org">pandas</a> for the initial exploration and  <a
+      href="http://d3js.org">d3.js</a> for the final visualization.</p>
+      
+      <footer class="footer">
+        <p>&copy; Michael Skaug 2015</p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>

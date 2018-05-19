@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Michael Skaug">
+
+    <title>myTracks</title>
+    
+    <!-- Bootstrap core CSS-->
+    <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome for icons-->
+    <!--<link href="node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">-->
+      
+    <link href="myTracks.css" rel="stylesheet">
+      
+    <!-- Flip card counter CSS from http://codepen.io/primozcigler/pen/wFlKI -->
+    <link rel="stylesheet" media="(max-width: 700px)" href="counter-max-700px.css">
+    <link rel="stylesheet" media="(min-width: 700px)" href="counter-min-700px.css">  
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Leaflet JS and CSS-->
+    <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css" />
+    <script src="node_modules/leaflet/dist/leaflet.js"></script>
+    <script src="node_modules/leaflet-ajax/dist/leaflet.ajax.min.js"></script>
+    
+    <!-- topojson.js for TopoJSON to GeoJSON conversion-->
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+        
+    <!-- JQuery-->
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    
+    <!-- Bootstrap core JS-->
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+  </head>
+  <body>
+    
+    <div id="legend">
+      <div class="legend-color run"><p>RUN</p></div>
+      <div class="legend-color bike"><p>BIKE</p></div>
+      <div class="legend-color hike"><p>HIKE</p></div>
+      <div class="legend-color approach"><p>APPROACH</p></div>
+      <div class="legend-color ski"><p>SKI</p></div>
+    </div>
+    
+    <div id="stats-board" class="container-fluid">
+      <div id="stats-miles" class="stats-window row">
+        <div id="miles-counter" class="counter .col-sm-6">
+          <div class="num-container">
+            <div class="num">
+              <div class="top">0</div>
+              <div class="bottom"><div class="shift">0</div></div>
+            </div>
+          </div><div class="num-container">
+            <div class="num">
+              <div class="top">0</div>
+              <div class="bottom"><div class="shift">0</div></div>
+            </div>
+          </div><div class="num-container">
+            <div class="num">
+              <div class="top">0</div>
+              <div class="bottom"><div class="shift">0</div></div>
+            </div>
+          </div>
+        </div>
+        <div id="miles-label" class="stats-label .col-sm-6">Total distance (miles)</div>
+      </div>
+      
+      <div id="stats-ascent" class="stats-window row">
+        <div id="ascent-counter" class="counter .col-sm-6">
+          <div class="num-container">
+            <div class="num">
+              <div class="top">0</div>
+              <div class="bottom"><div class="shift">0</div></div>
+            </div>
+          </div><div class="num-container">
+            <div class="num">
+              <div class="top">0</div>
+              <div class="bottom"><div class="shift">0</div></div>
+            </div>
+          </div>,<div class="num-container">
+            <div class="num">
+              <div class="top">0</div>
+              <div class="bottom"><div class="shift">0</div></div>
+            </div>
+          </div><div class="num-container">
+            <div class="num">
+              <div class="top">3</div>
+              <div class="bottom"><div class="shift">3</div></div>
+            </div>
+          </div><div class="num-container">
+            <div class="num">
+              <div class="top">2</div>
+              <div class="bottom"><div class="shift">2</div></div>
+            </div>
+          </div>
+        </div>
+        <div id="ascent-label" class="stats-label .col-sm-6">Total ascent (feet)</div>
+      </div>
+    </div>
+    
+    <div id="footer" >
+      <p id="footer-info">These are my outdoor pursuits, tracked with <a href="https://www.gaiagps.com/gallery/">GaiaGPS</a>   Find out more <a href="http://michaelskaug.com/my_tracks/">here</a></p>
+    </div>
+    <div id="map"></div>
+    
+        
+    <div id="tooltip" class="hidden">
+      <p><span id="value">100</span></p>
+    </div>
+    
+    <script type="text/javascript" src="myTracks.js"></script>
+    
+  </body>
+</html>

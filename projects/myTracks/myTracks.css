@@ -1,0 +1,107 @@
+html, body{
+  position:relative;
+  height:100%;
+  width:100%;
+  padding: 0px;
+  overflow: hidden;
+  text-align: center;
+  margin: 0px;
+  font-size: 1em;
+}
+#map{
+  height:100%;
+}
+#tooltip {
+  position: fixed;
+  width: auto;
+  height: auto;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+#tooltip.hidden {
+  display: none;
+}
+#tooltip p {
+  margin: 0;
+  font-family: sans-serif;
+  line-height: 20px;
+}
+#legend {
+  position: fixed;
+  z-index: 99;
+  width: 18%;
+  max-width: 250px;
+  height: 30%;
+  padding: 10px;
+  left: 10px;
+  text-align: center;
+}
+#footer{
+  z-index: 100;
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  width: auto;
+}
+#footer-info{
+  font-family: sans-serif;
+  font-size: 0.75em;
+}
+.legend-color{
+  position: relative;
+  text-align: center;
+  font-family: Roboto;
+  width: 100%;
+  min-width: 80px;
+  height: 20%;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+}
+.legend-color p{
+  position: relative;
+  top: 25%;
+  margin: 0px;
+  color: #ffffff;
+}
+.run{
+  stroke:#000;
+  background-color: rgba(0,0,0,0.8);
+}
+.bike{
+  stroke: #A95FC7;
+  background-color: rgba(169,95,199,0.8);
+}
+.hike{
+  stroke: #669748;
+  background-color: rgba(102,151,72,0.8);
+}
+.approach{
+  stroke: #B86634;
+  background-color: rgba(184,102,52,0.8);
+}
+.ski{
+  stroke: #667FA4;
+  background-color: rgba(102,127,164,0.8);
+}
+@media (max-width: 700px) {
+  .legend-color p{ font-size: 0.8em;}
+  #legend {height: 27%;}
+}
+@media (max-width: 865px) {
+  #stats-board{
+    height: 150px;
+  }
+  #stats-miles {
+    bottom: 70px;
+  }
+}
+

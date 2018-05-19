@@ -1,0 +1,101 @@
+/*------------------------------------*\
+    counter
+\*------------------------------------*/
+#stats-board{
+  position: absolute;
+  bottom: 50px;
+  padding: 10px;
+  left: 10px;
+  z-index: 99;
+  height: 115px;
+  width: 40%;
+  max-width: 450px;
+  min-width: 250px;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 1);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+}
+.stats-label{
+  display: inline-block;
+  font-family: Roboto;
+  position: relative;
+  bottom: 8px;
+}
+.stats-window{
+  position: absolute;
+  width: 100%;
+  padding: 0 0 0 15px;
+}
+#stats-miles {
+  bottom: 50px;
+}
+#miles-label{
+  left: 0px;
+}
+#stats-ascent {
+  bottom: 0px;
+}
+
+.counter {
+  font-family: 'Open Sans', Helvetica sans-serif;
+  z-index: 999;
+  display: inline-block;
+  line-height: 1;
+  font-size: 30px;
+  color: rgb(100,100,100);
+  width: 250px;
+  height: 50px;
+}
+.num-container {
+  display: inline-block;
+  border-radius: 5px;
+  background: linear-gradient(to bottom, #cdcdcd, #f2f2f2);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+  padding: 4px;
+  height: 41px;
+  width: 15%;
+  margin-left: 1%;
+  margin-right: 1%;
+  text-align: center;
+
+}
+.num {
+  position: relative;
+  color: #333;
+  font-weight: bold;
+  height: 100%;
+  width: 100%;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+.top,
+.bottom {
+  position: absolute;
+  height: 49%;
+  overflow: hidden;
+  width: 100%;
+}
+.top {
+  background: linear-gradient(to bottom, #fff, #efefef);
+  border-radius: 4px 4px 0 0;
+}
+.bottom {
+  top: 51%;
+  background-color: #fafafa;
+  border-radius: 0 0 4px 4px;
+}
+.shift {
+  margin-top: -16px;
+}
+@media (max-width: 865px) {
+  #stats-board{
+    height: 150px;
+  }
+  #stats-miles {
+    bottom: 70px;
+  }
+}

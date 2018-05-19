@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<script type="text/javascript">
+			if (screen.width <= 800) {
+				window.location.href = "mobile/index.html";
+			}
+		</script>
+		<meta charset="utf-8">
+		<title>Everywhere Beckey</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+		<script src="//d3js.org/topojson.v1.min.js"></script>
+		<link href="bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
+		<style type="text/css">
+			html,
+			body {
+			   margin:0;
+			   padding:0;
+			   position: relative;
+			}
+			.location_dots {
+				stroke: white;
+				stroke-width: 1;
+				fill: rgba(250,150,150,0.3);
+			}
+			.location_dots:hover {
+				stroke: black;
+			}
+			#tooltip {
+				position: absolute;
+				z-index: 99;
+				width: auto;
+				height: auto;
+				padding: 10px;
+				background-color: rgba(255, 255, 255, 1);
+				-webkit-border-radius: 10px;
+				-moz-border-radius: 10px;
+				border-radius: 3px;
+				-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+				-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			}
+			#tooltip.hidden {
+				display: none;
+			}
+			#tooltip p {
+				margin: 0;
+				font-family: sans-serif;
+				font-size: 16px;
+				line-height: 20px;
+			}
+			#tooltip:before{
+				content:'';
+				display:block;
+				width:0;
+				height:0;
+				position:absolute;
+			
+				border-top: 8px solid transparent;
+				border-bottom: 8px solid transparent;
+				border-right:8px solid white;
+				left:-8px;
+			
+				top:30px;
+			}
+			#byline{
+				color: rgb(150,150,150);
+				font: 11px serif;
+			}
+			.header{
+				position:relative;
+				z-index: 3;
+				top: 0px;
+				background-color: rgb(10, 10, 10);
+				height: 40px;
+				width: 100%;
+				padding-left: 10px;
+			}
+			.header-content{
+				display: inline-block;
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+			}
+			.header-buttons {
+				position: absolute;
+				right: 0px;
+			}
+			.header .title{
+				font-family: Arial,Helvetica,"san-serif";
+				font-size: 16px;
+				font-weight: bold;
+				color: rgb(255, 255, 255);
+			}
+			.icon {
+				padding-right: 10px;
+			}
+			.fa {
+				color: #fff;
+			}
+			.land {
+				fill: none;
+			}
+			.boundary {
+				fill: none;
+				stroke: #fff;
+				stroke-width: .3px;
+			}
+			.container {
+				width: 800px;
+			}
+			#graphic {
+				padding-top: 200px;
+			}
+			.step {
+				margin-bottom: 200px;
+				font-family: "TiemposTextWeb-Regular","Georgia";
+				font-size: 16px;
+				line-height: 23px;
+				color: #767678;
+			}
+			@media screen and (min-width: 2500px) {
+				.step {
+					margin-bottom: 500px;
+					font-family: "TiemposTextWeb-Regular","Georgia";
+					font-size: 16px;
+					line-height: 23px;
+					color: #767678;
+				}
+			}
+			#sections {
+				position: relative;
+				display: inline-block;
+				width: 250px;
+				top: 0px;
+				z-index: 1;
+				padding-bottom: 20px;
+			}
+			#sections .title {
+				font-family: Arial,Helvetica,"san-serif";
+				font-size: 16px;
+				font-weight: bold;
+				margin-bottom: 2px;
+				color: #262626;
+				line-height: 1.2em;
+			}
+			.section_vis{
+				height: 100px;
+				margin-top: 20px;
+			}
+			#vis {
+				width: auto;
+				height: 800px;
+				position: fixed;
+				top: 0px;
+				padding-top: 30px; 
+				z-index: 2;
+			}
+			.zoom-buttons {
+				position: fixed;
+				visibility: hidden;
+			}
+			svg {
+				font-family: sans-serif;
+			}
+			.axis {
+				font: 10px sans-serif;
+			}
+			.scroll_arrow {
+				stroke: #fff;
+				stroke-width: 3px;
+				stroke-linejoin: round;
+				stroke-linecap: round;
+			}  
+			.axis path,
+			.axis line {
+			  fill: none;
+			  stroke: #000;
+			  shape-rendering: crispEdges;
+			}
+			.x.axis > .tick line {
+				/*display: none;*/
+			}
+			.x.axis path {
+			  display: none;
+			}
+			.bars {
+				fill: #555;
+				stroke: #555;
+				stroke-linejoin: round;
+				stroke-linecap: round;
+			}
+			.topAreas path {
+				fill: none;
+				stroke: #000;
+				stroke-width: 1px;
+			}
+			.hexbins {
+				pointer-events: none;
+			}
+			.area_labels {
+				pointer-events: none;
+			}
+			#vis4 > .y.axis path {
+			  display: none;
+			}
+			.footer{
+				position: absolute;
+				bottom: 0px;
+				background-color: rgb(200, 200, 200);
+				height: 100px;
+				width: 100%;
+				padding: 4px;
+				color: #000;
+				z-index: 100;
+			}
+			.footer p{
+				
+			}
+			.footer .title{
+				font-family: Arial,Helvetica,"san-serif";
+				font-size: 16px;
+				font-weight: bold;
+				color: #000;
+			}
+			.footer
+		</style>
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		  
+			ga('create', 'UA-36183871-2', 'auto');
+			ga('send', 'pageview');
+		</script>
+	</head>
+	<body>
+		<div class="header text-muted">
+			<div class="header-content title">Everywhere Beckey</div>
+			<div class="header-content header-buttons">
+				<a class="icon-twitter icon" rel="nofollow"
+					href="http://twitter.com/"
+					onclick="popUp=window.open(
+						'http://twitter.com/intent/tweet?text=Everywhere Beckey via @mike_skaug - '+location.href+' pic.twitter.com/LSFu2DTrj3',
+						'popupwindow',
+						'scrollbars=yes,width=800,height=400');
+					popUp.focus();
+					return false">
+					<i class="fa fa-lg fa-twitter"></i>
+				</a>
+				<a class="icon-facebook icon" rel="nofollow"
+					href="http://www.facebook.com/"
+					onclick="popUp=window.open(
+						'http://www.facebook.com/sharer.php?u='+location.href,
+						'popupwindow',
+						'scrollbars=yes,width=800,height=400');
+					popUp.focus();
+					return false">
+					<i class="fa fa-lg fa-facebook"></i>
+				</a>
+			</div>
+		</div>
+		
+		<div class="container">
+		<div id="tooltip" class="hidden">
+			<p><span id="title">Ð</span></p>
+			<p><span id="year">Ð</span></p>
+			<p><a id="link" href="" target="_blank">AAJ report</a></p>
+		</div>
+		<div id="graphic">
+			<div id="sections">
+				<section class="step">
+				  <div class="title">Everywhere Beckey</div>
+				  Fred Beckey is a climbing icon with a career spanning over 70 years and thousands of first ascents across western North America. Many of those climbs are chronicled in the American Alpine Journal.
+				  <div class="section_vis" id="vis0"></div>
+				</section>
+				<section class="step">
+				  <!-- case 1 -->
+				  <div class="title">60 Year Career</div>
+				  Beckey reported over 400 climbs in the American Alpine Journal over a period of 60 years.
+				  <div class="section_vis" id="vis1"></div>
+				</section>
+				<section class="step">
+				  <!-- case 2 -->
+				  <div class="title">His Favorite Destinations</div>
+					Beckey climbed throughout western North America, but he returned again and again to these four areas.
+					<div class="section_vis" id="vis2"></div>
+				</section>
+				<section class="step">
+				  <!-- case 3 -->
+				  <div class="title">Beckey Was There First</div>
+				  Not only did Beckey get around, he usually got there before anyone else.
+				  <div class="section_vis" id="vis3"></div>
+				</section>
+				<section class="step">
+				  <!-- case 4-->
+				  <div class="title">Explore</div>
+				  Pan, zoom and hover to find out more.
+				  <div class="section_vis" id="vis4"></div>
+				</section>
+			</div>
+			<div id="vis">
+				<div class="zoom-buttons">
+					<button type="button" class="btn btn-secondary" data-zoom="+1"><i class="fa fa-plus"></i></button>
+					<button type="button" class="btn btn-secondary" data-zoom="-1"><i class="fa fa-minus"></i></button>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div class="footer text-muted">
+			<div class="container" style="padding-top: 20px">
+				<p> <span class="title">Source:</span> <a href="http://publications.americanalpineclub.org/" target="_blank">American Alpine Journal</a></p>
+				<p> <span class="title">Design:</span> <a href="http://michaelskaug.com/" target="_blank">Michael Skaug</a></p>
+			</div>
+		</div>
+		
+		<script type="text/javascript" src="underscore.js"></script>
+		<script type="text/javascript" src="map.js"></script>
+		<script type="text/javascript" src="hexbin.min.js"></script>
+		<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="mfreeman_scroller.js"></script>
+		<script src="https://d3js.org/d3-queue.v2.min.js"></script>
+		<script type="text/javascript" src="sections.js" defer></script>
+	</body>
+</html>

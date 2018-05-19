@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>MotionTrack - Kitchen Feet</title>
+
+		<link href="../styles/layout.css" rel="stylesheet" type="text/css" media="all">
+		    <!-- Bootstrap core CSS -->
+		<link href="../../../bootstrap_dist/css/bootstrap.min.css" rel="stylesheet">
+	    
+		<!-- Custom styles for this template -->
+		<link href="../../../bootstrap_dist/css/jumbotron-narrow.css" rel="stylesheet">	
+
+		<!--[if lt IE 9]>
+		<script type="text/javascript">alert("Your browser does not support the canvas tag.");</script>
+		<![endif]-->
+		<script src="../processing.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		// convenience function to get the id attribute of generated sketch html element
+			function getProcessingSketchId () { return 'human_kitchen_svg'; }
+		</script>
+
+	</head>
+	<body>
+		<div class="wrapper row1">
+		<header id="header">
+			<div id="logo">
+				<h1><a href="../index.html">MotionTrack</a></h1>
+			</div>
+			<div class="fl_right">
+			    <ul>
+			    <li><a href="../about.html">About</a></li>
+			    </ul>
+			</div>
+		</header>
+		</div>
+		
+		<div id="content" class="container">
+			<div class="center">
+				<canvas id="human_kitchen_svg" data-processing-sources="human_kitchen_svg.pde" 
+						width="700" height="500" onmouseover="document.body.style.overflow='hidden';" onmouseout="document.body.style.overflow='auto';">
+					<p>Your browser does not support the canvas tag.</p>
+					<!-- Note: you can put any alternative content here. -->
+				</canvas>
+				<noscript>
+					<p>JavaScript is required to view the contents of this page.</p>
+				</noscript>
+				<div id="subdescription">
+				<p>There are a lot of people working on motion capture and analysis of human motion.
+				Much of it is being done in the fields of computer vision and animation.  These are the
+				motion paths of two sets of human feet while setting the kitchen table. This
+				<a href="https://ias.in.tum.de/software/kitchen-activity-data">data set</a> comes from the Technische Universit&aumlt M&uumlnchen.</p>
+				</div>
+			</div>
+			
+			
+			
+		</div>
+		
+
+
+	</body>
+</html>

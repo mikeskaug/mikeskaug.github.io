@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="Michael Skaug">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Michael Skaug</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../bootstrap_dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../bootstrap_dist/css/jumbotron-narrow.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-36183871-2', 'auto');
+      ga('send', 'pageview');
+    
+    </script>    
+  </head>
+  <style>
+    .date {
+      color: #636363;
+      font-family: "Roboto", sans-serif;
+      font-size: small;
+    }
+  </style>
+
+  <body>
+
+    <div class="container">
+        <a href="../"><span class="h5 text-muted">MichaelSkaug </span></a> <span class="date">Oct 26, 2015</span>
+
+        <h1>D3 Hexbins over a Shaded Relief AlbersUS Map </h1>
+        <p>I recently built an interactive map showing the changes in <a
+        href="../projects/seasons">climbing seasons across the US</a>.  I encountered some challenges along the way that I think others might face, so I thought I would share my solutions here.</p>
+        
+        <h3>Aggregating and Encoding</h3>
+        <p>The first challenge was related to the <strong>visual encoding</strong> of the data, which is a fundamental step in data visualization.  There were really only three dimensions in the data: the geographic location (two dimensions) and a month dependent season value (one dimension) for each climbing area. (There were actually 12 dimensions in the season value because the value was different for every month, but this was packaged into the interactive slider.)  Normally, visualizations become more challenging with higher dimensional data, but three is reasonable.  The geographic location could be displayed on a map and the season value could be encoded with some visual variable of the symbol, such as size, opacity, color, etc. When visualizing the <a href="../projects/ClimbsMapped"> number of climbs in the US</a>, symbol size was effective and regions of higher density were apparent due to the semi-opaque symbols.  But the same strategy did not work with the season data:</p>
+        
+        <p><img class="fullcol" src="seasons_bubble.png"></p>
+        
+        <p>One reason it didn't work was that the season value for each area was already normalized to a value 0-1000. (This is related to how MountainProject defines "season" for different areas.) This minimized the changes in symbol size.  The only quantity that was effectively communicated was the density of climbing areas in different regions, which was not the intention.  Another option was to add a linear color scale to the symbols, but result was not much better with most of the map appearing purple and visually dominated by regions with the greatest number of climbing areas:</p>
+        
+        <p><img class="fullcol" src="seasons_bubble_color.png"></p>
+          
+        <p>Nearby climbing areas often share the same season, so I decided to spatially aggregate the data.  For this purpose I used the <a href="https://github.com/d3/d3-plugins/tree/master/hexbin">hexbin.js</a> library which allows you to spatially aggregate values and encode the result in the hexagon size or color.  One drawback is that due to averaging, hexagons containing many areas show less color change month-to-month compared to a hexagon containing a single area.  But you do see the general shift in climbing from the northern lattitudes and mountain states  in the summer to the desert southwest in the winter:</p>
+        
+        <p><img class="fullcol" src="seasons_hexbin.png"></p>
+        
+        <h3>Shaded Relief with the AlbersUS map</h3>
+        <p>I wanted to use the <a href="http://bl.ocks.org/mbostock/2869946">AlbersUS map projection</a> because it's a lower 48 projection that includes Alaska and Hawaii.  But I also wanted to use a beautiful shaded relief basemap from <a href="http://www.naturalearthdata.com">naturalearthdata.com</a>.  To do this, you would normally take the shaded relief bitmap and reproject it into the desired projection using GDAL, following something like <a href="https://gist.github.com/mbostock/5044313">this</a>.  The problem was that the AlbersUSA projection is a composite projection with Alaska and Hawaii shifted and scaled.  My solution to this probelm was a <strong>serious hack</strong>, but it got the job done.</p>
+        
+        <p>First, I used GDAL to produce two bitmaps, one for the lower 48:
+        <blockquote>
+          gdalwarp -s_srs EPSG:4326 -r lanczos -ts 900 0  -t_srs EPSG:102003  -te -2800000 -1800000 2600000 1800000  GRAY_50M_SR_W.tif lower48.tif
+        </blockquote>
+        <p><img class="fullcol" src="lower48.png"></p>
+        and another for Alaska:
+        <blockquote>
+          gdalwarp -s_srs EPSG:4326 -r lanczos   -ts 300 0   -t_srs EPSG:3338  -te -2000000 -200000 2000000 2500000  GRAY_50M_SR_W.tif alaska.tif
+        </blockquote>
+        <p><img  src="alaska.png"></p>
+        I then used the <code>albersUsa()</code> projection from d3 to create clipping masks and with some tedious shifting and scaling produced the map below.  Example code is <a href="http://bl.ocks.org/mikeskaug/4540864bb185987d5820">here</a>.
+        <p><img  src="shaded_relief.jpg"></p>
+        </p>
+      <footer class="footer">
+        <p>&copy; Michael Skaug 2015</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../bootstrap_dist/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>

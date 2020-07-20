@@ -1,11 +1,24 @@
+html {
+    font-size: 16px;
+}
 span.date {
     color: #636363;
     font-family: "Roboto", sans-serif;
     font-size: smaller;
 }
+:root {
+    /* from the lovely https://macwright.org/ */
+    --mono-font:San Francisco Mono,Monaco,"Consolas","Lucida Console","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+    --sans-font:-apple-system,BlinkMacSystemFont,"avenir next",avenir,helvetica,"helvetica neue",ubuntu,roboto,noto,"segoe ui",arial,sans-serif
+}
 body {
-    font-size: 16px;
+    /* based on the lovely https://macwright.org/ */
+    font-size: 1rem;
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    color: #111;
+    font-family: var(--sans-font)
 }
 .code {
     font-family: 'Courier New', Courier, monospace;
@@ -17,4 +30,20 @@ body {
 .three-quarter-col {
     width: 75%;
     max-width: 500px;
+}
+.smaller {
+    font-size: smaller;
+}
+a {
+    color: #000;
+    text-decoration-skip-ink: auto;
+    text-decoration: underline
+}
+.indent {
+    padding-left: 25px;
+}
+.centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto
 }
